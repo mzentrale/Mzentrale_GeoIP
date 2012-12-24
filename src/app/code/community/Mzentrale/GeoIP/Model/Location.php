@@ -29,7 +29,7 @@
  * 
  * @category    Mzentrale
  * @package     Mzentrale_GeoIP
- * @author      Francesco Marangi | mzentrale <f.marangi@mzentrale.de>
+ * @author      Francesco Marangi | mzentrale
  */
 class Mzentrale_GeoIP_Model_Location extends Mage_Core_Model_Abstract
 {

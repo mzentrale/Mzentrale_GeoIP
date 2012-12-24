@@ -29,7 +29,7 @@
  * 
  * @category    Mzentrale
  * @package     Mzentrale_GeoIP
- * @author      Francesco Marangi | mzentrale <f.marangi@mzentrale.de>
+ * @author      Francesco Marangi | mzentrale
  */
 class Mzentrale_GeoIP_Model_Resource_Location extends Mage_Core_Model_Resource_Db_Abstract
 {
@@ -82,35 +82,40 @@ class Mzentrale_GeoIP_Model_Resource_Location extends Mage_Core_Model_Resource_D
     public function importFile($fileName, $rows = 500, $truncate = true)
     {
         $adapter = $this->_getWriteAdapter();
-
-        if ($truncate) {
-            $adapter->truncateTable($this->getMainTable());
-        }
-
         $file = new Varien_Io_File();
-        $file->streamOpen($fileName, 'r');
-
         $counter = 0;
         $data = array();
 
-        while ($row = $file->streamReadCsv()) {
-            if (!isset($row[2]) || !isset($row[3]) || !isset($row[4])) {
-                continue;
+        try {
+            if ($truncate) {
+                $adapter->truncateTable($this->getMainTable());
             }
 
-            $data[] = array($row[2], $row[3], $row[4]);
-            $counter += 1;
+            $file->streamOpen($fileName, 'r');
+            while ($row = $file->streamReadCsv()) {
+                if (!isset($row[2]) || !isset($row[3]) || !isset($row[4])) {
+                    continue;
+                }
 
-            if ($rows <= $counter) {
+                $data[] = array($row[2], $row[3], $row[4]);
+                $counter += 1;
+
+                if ($rows <= $counter) {
+                    $adapter->insertArray($this->getMainTable(), array('range_from', 'range_to', 'country_id'), $data);
+                    $counter = 0;
+                    $data = array();
+                }
+            }
+
+            if (!empty($data)) {
                 $adapter->insertArray($this->getMainTable(), array('range_from', 'range_to', 'country_id'), $data);
-                $counter = 0;
-                $data = array();
             }
+        } catch (Exception $e) {
+            $file->streamClose();
+            throw $e;
         }
 
-        if (!empty($data)) {
-            $adapter->insertArray($this->getMainTable(), array('range_from', 'range_to', 'country_id'), $data);
-        }
+        $file->streamClose();
 
         return $this;
     }

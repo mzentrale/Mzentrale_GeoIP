@@ -23,11 +23,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 <config>
+    <modules>
+        <Mzentrale_GeoIP>
+            <version>0.1.0</version>
+        </Mzentrale_GeoIP>
+    </modules>
     <global>
         <helpers>
             <mzgeoip>
                 <class>Mzentrale_GeoIP_Helper</class>
             </mzgeoip>
         </helpers>
+        <models>
+            <mzgeoip>
+                <class>Mzentrale_GeoIP_Model</class>
+                <resourceModel>mzgeoip_resource</resourceModel>
+            </mzgeoip>
+            <mzgeoip_resource>
+                <class>Mzentrale_GeoIP_Model_Resource</class>
+                <entities>
+                    <location>
+                        <table>mzgeoip_location</table>
+                    </location>
+                </entities>
+            </mzgeoip_resource>
+        </models>
+        <resources>
+            <mzgeoip_setup>
+                <setup>
+                    <module>Mzentrale_GeoIP</module>
+                </setup>
+            </mzgeoip_setup>
+        </resources>
     </global>
 </config>

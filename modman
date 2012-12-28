@@ -1,2 +1,3 @@
 src/app/etc/modules/Mzentrale_GeoIP.xml app/etc/modules/Mzentrale_GeoIP.xml
 src/app/code/community/Mzentrale/GeoIP/ app/code/community/Mzentrale/GeoIP/
+src/app/design/adminhtml/default/default/template/mzentrale/geoip/ app/design/adminhtml/default/default/template/mzentrale/geoip/

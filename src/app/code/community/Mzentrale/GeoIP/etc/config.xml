@@ -29,6 +29,11 @@ THE SOFTWARE.
         </Mzentrale_GeoIP>
     </modules>
     <global>
+        <blocks>
+            <mzgeoip>
+                <class>Mzentrale_GeoIP_Block</class>
+            </mzgeoip>
+        </blocks>
         <helpers>
             <mzgeoip>
                 <class>Mzentrale_GeoIP_Helper</class>
@@ -56,4 +61,22 @@ THE SOFTWARE.
             </mzgeoip_setup>
         </resources>
     </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <mzgeoip after="Mage_Adminhtml">Mzentrale_GeoIP_Adminhtml</mzgeoip>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+    <default>
+        <general>
+            <country>
+                <geoip_database_url>http://geolite.maxmind.com/download/geoip/database/GeoIPCountryCSV.zip</geoip_database_url>
+            </country>
+        </general>
+    </default>
 </config>

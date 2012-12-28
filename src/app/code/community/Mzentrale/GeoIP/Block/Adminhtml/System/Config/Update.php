@@ -25,60 +25,55 @@
  */
 
 /**
- * GeoIP Helper Class
+ * GeoIP System Config Update Button
  * 
  * @category    Mzentrale
  * @package     Mzentrale_GeoIP
  * @author      Francesco Marangi | mzentrale
  */
-class Mzentrale_GeoIP_Helper_Data extends Mage_Core_Helper_Abstract
+class Mzentrale_GeoIP_Block_Adminhtml_System_Config_Update extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
-    const XML_PATH_GEOIP_DATABASE_URL = 'general/country/geoip_database_url';
-
 
     /**
-     * Get GeoIP Database URL for updates
-     * 
-     * @return string
+     * Set template to itself
+     *
+     * @return Mzentrale_GeoIP_Block_Adminhtml_System_Config_Update
      */
-    public function getDatabaseUrl()
+    protected function _prepareLayout()
     {
-        return Mage::getStoreConfig(self::XML_PATH_GEOIP_DATABASE_URL);
+        parent::_prepareLayout();
+        if (!$this->getTemplate()) {
+            $this->setTemplate('mzentrale/geoip/system/config/update.phtml');
+        }
+        return $this;
     }
 
     /**
-     * Get country by IP
-     * 
-     * Returns the ISO code of the country, or false if the IP address
-     * is not valid or cannot be found.
-     * 
-     * @param string $ipAddress
+     * Unset some non-related element parameters
+     *
+     * @param Varien_Data_Form_Element_Abstract $element
      * @return string
      */
-    public function getCountry($ipAddress = null)
+    public function render(Varien_Data_Form_Element_Abstract $element)
     {
-        if (!$ipAddress) {
-            $ipAddress = Mage::helper('core/http')->getRemoteAddr();
-        }
-        return Mage::getModel('mzgeoip/location')->getCountryByIP($ipAddress);
+        $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
+        return parent::render($element);
     }
 
     /**
-     * Get country name by IP
-     * 
-     * @param string $ipAddress
-     * @param string $locale
+     * Get the button and scripts contents
+     *
+     * @param Varien_Data_Form_Element_Abstract $element
      * @return string
      */
-    public function getCountryName($ipAddress = null, $locale = null)
+    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
-        $country = $this->getCountry($ipAddress);
-        if ($country) {
-            if (!$locale) {
-                $locale = Mage::app()->getLocale()->getLocale();
-            }
-            return Mage::app()->getLocale()->getLocale()->getTranslation($country, 'country', $locale);
-        }
-        return false;
+        $originalData = $element->getOriginalData();
+        $this->addData(array(
+            'button_label' => Mage::helper('mzgeoip')->__($originalData['button_label']),
+            'html_id' => $element->getHtmlId(),
+            'target_url' => Mage::getSingleton('adminhtml/url')->getUrl('*/geoip/update'),
+        ));
+        return $this->_toHtml();
     }
 }

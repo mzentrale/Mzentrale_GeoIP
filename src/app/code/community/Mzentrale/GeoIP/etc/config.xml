@@ -72,6 +72,18 @@ THE SOFTWARE.
             </adminhtml>
         </routers>
     </admin>
+    <crontab>
+        <jobs>
+            <mzgeoip>
+                <schedule>
+                    <cron_expr>0 0 1 * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>mzgeoip/cron::updateDatabase</model>
+                </run>
+            </mzgeoip>
+        </jobs>
+    </crontab>
     <default>
         <general>
             <country>

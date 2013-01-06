@@ -79,21 +79,34 @@ class Mzentrale_GeoIP_Model_Update
         return $destination . DS . basename($url);
     }
 
-    protected function _extractFile($fileName, $adapter = 'zip')
+    protected function _extractFile($fileName)
     {
-        $zip = new Zend_Filter_Compress($adapter);
+        $zip = new Zend_Filter_Compress_Zip();
         $zip->setTarget(dirname($fileName));
         $zip->decompress($fileName);
         return $this;
     }
 
+    /**
+     * Get database file location
+     * 
+     * The full path of the first found CSV file is returned. A low-level
+     * implementation using SPL DirectoryIterator was chosen over
+     * Varien_Directory_Collection because the latter causes strict notices
+     * in php > 5.3.
+     * 
+     * @param string $path
+     * @return string
+     * @throws UnexpectedValueException If the specified path is not a valid directory
+     * @throws Mage_Core_Exception If no valid database file is found in the specified location
+     */
     protected function _getDatabaseFile($path)
     {
-        $collection = new Varien_Directory_Collection($path);
-        $collection->addFilter('extension', 'csv');
-        $collection->useFilter(true);
-        foreach ($collection->filesPaths() as $file) {
-            return $file;
+        $dir = new DirectoryIterator($path);
+        foreach ($dir as $file) {
+            if ($file->isFile() && $file->isReadable() && 'csv' == $file->getExtension()) {
+                return $file->getPathname();
+            }
         }
         Mage::throwException('Database file not found under ' . $path);
     }
@@ -105,7 +118,7 @@ class Mzentrale_GeoIP_Model_Update
      */
     public function getUpdateDir()
     {
-        $dir = Mage::getBaseDir('var') . '/geoip';
+        $dir = Mage::getBaseDir('var') . DS . 'geoip';
         if (!Mage::getConfig()->createDirIfNotExists($dir)) {
             return false;
         }
